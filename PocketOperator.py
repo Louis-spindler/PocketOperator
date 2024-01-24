@@ -478,7 +478,7 @@ while gameLoop:
     if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
-    print(f"tempo is {tempo}")
+    
     
     
 
