@@ -54,20 +54,36 @@ midGrey = (140,140,140)
 darkGrey = (100,100,100) 
 darkerGrey = (70,70,70)
 
+
 #Slider Class
 class Slider:
-  def __init__(self, x, y, w, h, circleX, Value):
-    self.sliderRect = pygame.Rect(x, y, w, h)
-    self.circleX = circleX = x + w/2
-    self.circleY = y + (h/2)
-    self.Value = Value
-  def getVal(self):
-    return self.Value
-  def draw(self, window, x, y):
-    pygame.draw.rect(window, darkGrey, self.sliderRect, border_radius=5)
-    pygame.draw.circle(window, darkerGrey, (self.circleX, self.circleY),14)
-tempoSlider = Slider(300, 350, 100, 20, 16, tempo)
-  
+  def __init__(self, pos: tuple, size: tuple, initialValue: float, min: int, max: int):
+    self.pos = pos
+    self.size = size
+
+    self.sliderLeftPos = self.pos[0] - (size[0]//2)
+    self.sliderRightPos = self.pos[0] + (size[0]//2)
+    self.sliderTopPos = self.pos[1] - (size[1]//2)
+    
+    self.min = min
+    self.max = max
+    self.initialValue = (self.sliderRightPos-self.sliderLeftPos)*initialValue #percentage
+
+    self.containerRect = pygame.Rect(self.sliderLeftPos, self.sliderTopPos, self.size[0], self.size[1])
+    self.buttonRect = pygame.Rect(self.sliderLeftPos + self.initialValue - 5, self.sliderTopPos, 10, self.size[1])
+  def render(self, screen):
+    pygame.draw.rect(screen, darkGrey, self.containerRect)
+    pygame.draw.rect(screen, darkerGrey, self.buttonRect)
+  def moveSlider(self, mousePos: tuple):
+    self.buttonRect.centerx = mousePos[0]
+  def getValue(self):
+    valRange = self.sliderLeftPos - self.sliderRightPos - 1 #-1 for padding. pixle col to exact
+    buttonVal = self.buttonRect.centerx - self.sliderLeftPos
+    value = (buttonVal/valRange)*(self.max-self.min)+self.min
+    return value*-1
+tempoSlider = Slider((300,350), (100,20), 0.5, 0, 100)
+
+
 #function that creates text
 def makeText(text="text", color=(255,255,255), font='Corbel', size=28):
   smallFont = pygame.font.SysFont(font, size) 
@@ -207,7 +223,6 @@ while gameLoop:
             else:
                 playThread.join()  
 
-
         #if statment so the user can't edit tracks while playing them
         if playButton is False:
 
@@ -290,6 +305,7 @@ while gameLoop:
         
     #stores the (x,y) tuple coordinates of mouse
     mouse = pygame.mouse.get_pos() 
+    mouseClick = pygame.mouse.get_pressed()
 
     def drawFirstTrackRow():
       vars = [a1,a2,a3,a4,a5,a6,a7,a8]
@@ -350,8 +366,15 @@ while gameLoop:
         window.blit(playImg, (74, 342))
     drawPlayButton()
 
-    #Draw Tempo Slider
-    tempoSlider.draw(window, 300, 300)
+    #draw slider and check for tempo slider draging
+    tempoSlider.render(window)
+    if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
+      tempoSlider.moveSlider(mouse)
+    tempo = tempoSlider.getValue() * 0.005
+    print(f"tempo is {tempo}")
+    
+    
 
+    
     pygame.display.update()
   
