@@ -3,7 +3,7 @@ import pygame
 from pygame import mixer
 from pygame.locals import QUIT
 import time
-#threading so game dosent die when trackes are played
+#threading so game dosen't die when trackes are played
 import threading
 
 #initializing pygame packages
