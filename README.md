@@ -1,2 +1,2 @@
-# PocketOperator
+# PocketOperator is amazingly amazing
  

@@ -28,13 +28,13 @@ selectAllButton = False
 playButton = False
 
 #loading images for buttons
-eraserImg = pygame.image.load('eraser-icon-4.png')
+eraserImg = pygame.image.load('buttonTextures/eraser-icon-4.png')
 eraserImg = pygame.transform.scale(eraserImg, (40,40))
-selectImg = pygame.image.load('select-all-icon.png')
+selectImg = pygame.image.load('buttonTextures/select-all-icon.png')
 selectImg = pygame.transform.scale(selectImg, (40,40))
-playImg = pygame.image.load('play-button.png')
+playImg = pygame.image.load('buttonTextures/play-button.png')
 playImg = pygame.transform.scale(playImg, (45,45))
-pauseImg = pygame.image.load('video-pause-button.png')
+pauseImg = pygame.image.load('buttonTextures/video-pause-button.png')
 pauseImg = pygame.transform.scale(pauseImg, (45,45))
 
 #making pygame window
@@ -54,6 +54,20 @@ midGrey = (140,140,140)
 darkGrey = (100,100,100) 
 darkerGrey = (70,70,70)
 
+#Slider Class
+class Slider:
+  def __init__(self, x, y, w, h, circleX, Value):
+    self.sliderRect = pygame.Rect(x, y, w, h)
+    self.circleX = circleX = x + w/2
+    self.circleY = y + (h/2)
+    self.Value = Value
+  def getVal(self):
+    return self.Value
+  def draw(self, window, x, y):
+    pygame.draw.rect(window, darkGrey, self.sliderRect, border_radius=5)
+    pygame.draw.circle(window, darkerGrey, (self.circleX, self.circleY),14)
+tempoSlider = Slider(300, 350, 100, 20, 16, tempo)
+  
 #function that creates text
 def makeText(text="text", color=(255,255,255), font='Corbel', size=28):
   smallFont = pygame.font.SysFont(font, size) 
@@ -152,15 +166,16 @@ def playTracks():
 
 
 #Load Sounds
-snareDrum = pygame.mixer.Sound("/Users/louisspindler/Music/Music/Media.localized/Music/www.FesliyanStudios.com/www.FesliyanStudios.com/www.FesliyanStudios.com 1.mp3")
-closedHighHat = pygame.mixer.Sound("/Users/louisspindler/Music/Music/Media.localized/Music/www.FesliyanStudios.com/www.FesliyanStudios.com/www.FesliyanStudios.com 2.mp3")
-bassDrum = pygame.mixer.Sound("/Users/louisspindler/Music/Music/Media.localized/Music/www.FesliyanStudios.com/www.FesliyanStudios.com/www.FesliyanStudios.com.mp3")
+snareDrum = pygame.mixer.Sound("drumSamples/snareDrumHit.mp3")
+closedHighHat = pygame.mixer.Sound("drumSamples/closedHighHatHit.mp3")
+bassDrum = pygame.mixer.Sound("drumSamples/bassDrumHit.mp3")
 
 
 #game loop
 gameLoop = True
 while gameLoop:
-    #set frame rate
+    
+  #set frame rate
     clock.tick(30)
     #window color
     window.fill(royalPurple) 
@@ -181,8 +196,6 @@ while gameLoop:
         elif 12 <= mouse[0] <= 12+100 and 132 <= mouse[1] <= 132+50:
             print("playing sound 3")
             bassDrum.play()
-
-        
 
         #check for play button presses!!!!!!! Threading makes play back not incredably glitchy/anoying
         if 72 <= mouse[0] <= 72+50 and 340 <= mouse[1] <= 340+50:
@@ -275,7 +288,7 @@ while gameLoop:
             print("playing music! Can not edit tracks while playing ):")
             
         
-    #stores the (x,y) coordinates of mouse
+    #stores the (x,y) tuple coordinates of mouse
     mouse = pygame.mouse.get_pos() 
 
     def drawFirstTrackRow():
@@ -336,7 +349,9 @@ while gameLoop:
       elif playButton is False:
         window.blit(playImg, (74, 342))
     drawPlayButton()
-    
+
+    #Draw Tempo Slider
+    tempoSlider.draw(window, 300, 300)
 
     pygame.display.update()
   
