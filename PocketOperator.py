@@ -72,8 +72,8 @@ class Slider:
     self.containerRect = pygame.Rect(self.sliderLeftPos, self.sliderTopPos, self.size[0], self.size[1])
     self.buttonRect = pygame.Rect(self.sliderLeftPos + self.initialValue - 5, self.sliderTopPos, 10, self.size[1])
   def render(self, screen):
-    pygame.draw.rect(screen, darkGrey, self.containerRect)
-    pygame.draw.rect(screen, darkerGrey, self.buttonRect)
+    pygame.draw.rect(screen, darkGrey, self.containerRect, border_radius=10)
+    pygame.draw.rect(screen, darkerGrey, self.buttonRect, border_radius=10)
   def moveSlider(self, mousePos: tuple):
     self.buttonRect.centerx = mousePos[0]
   def getValue(self):
@@ -81,7 +81,6 @@ class Slider:
     buttonVal = self.buttonRect.centerx - self.sliderLeftPos
     value = (buttonVal/valRange)*(self.max-self.min)+self.min
     return value*-1
-tempoSlider = Slider((300,350), (100,20), 0.5, 0, 100)
 
 
 #function that creates text
@@ -186,6 +185,8 @@ snareDrum = pygame.mixer.Sound("drumSamples/newSnare.wav")
 closedHighHat = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3")
 bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
 
+#create slider object names tempoSlider thant controls tempo
+tempoSlider = Slider((185,365), (100,20), 0.5, 0, 100)
 
 #game loop
 gameLoop = True
