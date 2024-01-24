@@ -166,9 +166,9 @@ def playTracks():
 
 
 #Load Sounds
-snareDrum = pygame.mixer.Sound("drumSamples/snareDrumHit.mp3")
-closedHighHat = pygame.mixer.Sound("drumSamples/closedHighHatHit.mp3")
-bassDrum = pygame.mixer.Sound("drumSamples/bassDrumHit.mp3")
+snareDrum = pygame.mixer.Sound("drumSamples/drumSamples/newSnare.wav")
+closedHighHat = pygame.mixer.Sound("drumSamples/drumSamples/newClosedHiHat.mp3")
+bassDrum = pygame.mixer.Sound("drumSamples/drumSamples/newBassDrum.mp3")
 
 
 #game loop
