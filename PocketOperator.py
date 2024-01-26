@@ -6,7 +6,7 @@ import time
 #threading so game dosen't die when trackes are played
 import threading
 
-#initializing pygame packages
+#initializing pygame package and mixer
 pygame.init()
 pygame.mixer.init()
 
