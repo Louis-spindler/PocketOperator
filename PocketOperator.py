@@ -241,7 +241,7 @@ snareDrum = pygame.mixer.Sound("drumSamples/newSnare.wav")
 closedHighHat = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3")
 bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
 
-#create slider object names tempoSlider thant controls tempo
+#create slider object names tempoSlider thant controls tempo.
 tempoSlider = Slider((185,365), (100,20), 0.5, 0, 100)
 
 #game loop
