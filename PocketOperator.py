@@ -243,6 +243,10 @@ bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
 
 #create slider object names tempoSlider thant controls tempo.
 tempoSlider = Slider((185,365), (100,20), 0.5, 0, 100)
+#create slider objects for track volume sliders
+track1VolumeSlider = Slider((1100,35), (50,20), 0.5, 0, 1)
+track2VolumeSlider = Slider((1100,95), (50,20), 0.5, 0, 1)
+track3VolumeSlider = Slider((1100,155), (50,20), 0.5, 0, 1)
 
 #game loop
 gameLoop = True
@@ -478,10 +482,19 @@ while gameLoop:
     if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
+    #draw volume sliders for tracks
+    for trackSlider in [track1VolumeSlider,track2VolumeSlider,track3VolumeSlider]:   
+      trackSlider.render(window)
+      if trackSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
+        trackSlider.moveSlider(mouse)
+      TKVolume = trackSlider.getValue() 
+      if trackSlider == track1VolumeSlider:
+          closedHighHat.set_volume(TKVolume)
+      if trackSlider == track2VolumeSlider:
+          snareDrum.set_volume(TKVolume)
+      if trackSlider == track3VolumeSlider:
+          bassDrum.set_volume(TKVolume)
     
-    
-    
-
     
     pygame.display.update()
   
