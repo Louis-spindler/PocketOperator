@@ -242,7 +242,7 @@ closedHighHat = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3")
 bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
 
 #create slider object names tempoSlider thant controls tempo.
-tempoSlider = Slider((185,365), (100,20), 0.5, 0, 100)
+tempoSlider = Slider((185,370), (100,20), 0.5, 0, 100)
 #create slider objects for track volume sliders
 track1VolumeSlider = Slider((1100,35), (50,20), 0.5, 0, 1)
 track2VolumeSlider = Slider((1100,95), (50,20), 0.5, 0, 1)
@@ -257,7 +257,7 @@ while gameLoop:
     #window color
     window.fill(royalPurple) 
   
-    #loop checking for events(mouse clicks,key presses)
+    #loop checking for events(mouse clicks, key presses)
     for event in pygame.event.get():
       if event.type == QUIT:
         pygame.quit()
@@ -413,7 +413,6 @@ while gameLoop:
         else:
             print("playing music! Can not edit tracks while playing ):")
             
-        
     #stores the (x,y) tuple coordinates of mouse. mouseClick returns bool when mouse dose [0] left click or [2] right click
     mouse = pygame.mouse.get_pos() 
     mouseClick = pygame.mouse.get_pressed()
@@ -467,7 +466,6 @@ while gameLoop:
   
     #Draw clear all button/select all button
     drawSelectAllButton()
-
     #Draws play button
     def drawPlayButton():
       drawBoolButton(playButton,72,340,50,50,darkGrey,lightGrey,darkGrey,0,0)
@@ -479,9 +477,11 @@ while gameLoop:
 
     #draw slider and check for tempo slider draging
     tempoSlider.render(window)
+    window.blit(makeText(text="Tempo", color=lightGrey, size=21), (162,342))#superimposing tempo slider text
     if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
+
     #draw volume sliders for tracks
     for trackSlider in [track1VolumeSlider,track2VolumeSlider,track3VolumeSlider]:   
       trackSlider.render(window)
