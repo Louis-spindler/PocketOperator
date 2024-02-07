@@ -19,6 +19,10 @@ trackXValues = [120,180,239,239+(59*1),239+(59*2),239+(59*3),239+(59*4),239+(59*
 #float value for tempo
 tempo = 0.15
 
+#def left/right values for destinguishing left and right clicks on the sound sample buttons
+LEFTCLICK = 1
+RIGHTCLICK = 3
+
 # Define a flag to control the play loop
 playThread = None
 playThreadFlag = False
@@ -264,13 +268,18 @@ while gameLoop:
         sys.exit()
       if event.type == pygame.MOUSEBUTTONDOWN: 
         #check for Sound 1, 2, and 3 button press
-        if 12 <= mouse[0] <= 12+100 and 12 <= mouse[1] <= 12+40: 
+        if 12 <= mouse[0] <= 12+100 and 12 <= mouse[1] <= 12+40:
+          if event.button==LEFTCLICK: 
             print("playing sound 1")
             closedHighHat.play()
+          if event.button==RIGHTCLICK:
+            pass#!!!!!ADD change sample option to the play sound buttons!!!!!!
         elif 12 <= mouse[0] <= 12+100 and 72 <= mouse[1] <= 72+50:
+          if event.button==LEFTCLICK:
             print("playing sound 2")
             snareDrum.play()
         elif 12 <= mouse[0] <= 12+100 and 132 <= mouse[1] <= 132+50:
+          if event.button==LEFTCLICK:
             print("playing sound 3")
             bassDrum.play()
 
