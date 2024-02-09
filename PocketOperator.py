@@ -1,4 +1,7 @@
 import sys
+import os
+import tkinter as tk
+from tkinter import filedialog
 import pygame
 from pygame import mixer
 from pygame.locals import QUIT
@@ -45,12 +48,15 @@ pauseImg = pygame.image.load('buttonTextures/video-pause-button.png')
 pauseImg = pygame.transform.scale(pauseImg, (45,45))
 saveMusicImg = pygame.image.load('buttonTextures/save-music.png')
 saveMusicImg = pygame.transform.scale(saveMusicImg, (45,45))
+
+
 #making pygame window
 width = 1150
 height = 400 
 window = pygame.display.set_mode((width, height))
 pygame.display.set_caption('Pocket Operator')
 clock = pygame.time.Clock()
+
 
 #colors 
 white = (255,255,255) 
@@ -91,9 +97,8 @@ class Slider:
     value = (buttonVal/valRange)*(self.max-self.min)+self.min
     return value*-1
 
-
 class DropDownMenu:
-    def __init__(self, items, x, y, width, height, sound, buttonText):
+    def __init__(self, items, x, y, width, height, sound, buttonText, soundText, ogSound):
         self.items = items
         self.rect = pygame.Rect(x, y, width, height)
         self.is_open = False
@@ -103,16 +108,19 @@ class DropDownMenu:
         self.buttonColor = darkGrey
         self.bottomRadius=5
         self.hoverColor=midGrey
+        self.soundText = soundText
+        self.ogSound = ogSound
     def draw(self, surface):
         pygame.draw.rect(surface, self.buttonColor, self.rect, border_top_left_radius=5, border_top_right_radius=5, border_bottom_left_radius=self.bottomRadius, border_bottom_right_radius=self.bottomRadius)
-        window.blit(makeText(self.buttonText, navyBlue), (self.rect.x + 10, self.rect.y + 5))
+        window.blit(makeText(self.buttonText, navyBlue, size=24), (self.rect.x + 5, self.rect.y + 5))
+        window.blit(makeText(self.soundText, navyBlue, size=21), (self.rect.x + 5, self.rect.y + 30))
         if self.is_open:
             self.buttonColor=lightGrey
             self.bottomRadius=0
             for index, item in enumerate(self.items):
                 item_rect = pygame.Rect(self.rect.x, self.rect.y + (index + 2) * self.rect.height/2, self.rect.width, self.rect.height/2)
                 pygame.draw.rect(surface, lightGrey, item_rect)
-                window.blit(makeText(item, blue, size=23), (item_rect.x + (item_rect.width/2) - (len(item)*6), item_rect.y + item_rect.height/2-10))
+                window.blit(makeText(item, blue, size=20), (item_rect.x + 10, item_rect.y + item_rect.height/2-10))
         if self.is_open is False:
           self.buttonColor=darkGrey
           self.bottomRadius=5
@@ -130,19 +138,56 @@ class DropDownMenu:
                       if item_rect.collidepoint(event.pos):
                           self.selected_item = item
                           self.is_open = False
-                          print("sfdblnkdkbjdf")
                           if item == "Mute":
-                              self.sound.set_volume(0.1)
-                              print("muting...")
+                              self.sound.set_volume(0.0)
+                              print(f"muting {self.soundText}")
                           elif item == "Change":
-                              print("changing sound "+str(index))
+                              print(f"changing {self.soundText}")
+                              self.changeSound()
+                              self.soundText = "New Sound"
+                          elif item == "Reset":
+                              print(f"resetting {self.soundText}")
+                              self.sound = self.ogSound
+                              self.soundText = ''
                   if self.rect.collidepoint(event.pos):
                     self.sound.play()
                     self.is_open=not self.is_open
           elif event.button == LEFTCLICK and not self.is_open:  # Left-click to play sound
               if self.rect.collidepoint(event.pos):
                   self.sound.play()
-                        
+    def changeSound(self):
+        # Open a file explorer window to choose a new sound file
+        file_path = self.file_dialog()
+        if file_path:
+            # Load the new sound and update the associated sound
+            new_sound = pygame.mixer.Sound(file_path)
+            self.sound = new_sound
+            print(f"Changed sound for {self.soundText} to {file_path}")
+            
+            # Update the corresponding track buttons with the new sound
+            if self.soundText == "High Hat":
+                global closedHighHat
+                closedHighHat = new_sound
+            elif self.soundText == "Snare Drum":
+                global snareDrum
+                snareDrum = new_sound
+            elif self.soundText == "Bass Drum":
+                global bassDrum
+                bassDrum = new_sound
+    def file_dialog(self):
+        # Open a file dialog to choose a new sound file
+        if os.name == 'nt':  # Windows
+            from tkinter import filedialog, Tk
+            root = Tk()
+            root.withdraw()  # Hide the main window
+            file_path = filedialog.askopenfilename(filetypes=[("Sound Files", "*.wav;*.mp3")])
+            root.destroy()
+        else:  # Mac or Linux
+            import subprocess
+            file_path = subprocess.run(['osascript', '-e', 'POSIX path of (choose file of type {"public.audio"})'], stdout=subprocess.PIPE, text=True).stdout.strip()
+
+        return file_path
+    
 
 #function that creates text
 def makeText(text="text", color=(255, 255, 255), font='Corbel', size=28):
@@ -302,10 +347,9 @@ def drawSaveMusicButton():
   window.blit(saveMusicImg, (1090,340))
 
 #Load Sounds
-snareDrum = pygame.mixer.Sound("drumSamples/newSnare.wav")
-closedHighHat = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3")
-bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
-
+snareDrum, snareDrumText = pygame.mixer.Sound("drumSamples/newSnare.wav"), "Snare Drum"
+closedHighHat, closedHighHatText = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3"), "High Hat"
+bassDrum, bassDrumText = pygame.mixer.Sound("drumSamples/newBassDrum.mp3"), "Bass Drum"
 
 #create slider object names tempoSlider that controls tempo.
 tempoSlider = Slider((185,370), (100,20), 0.5, 0, 100)
@@ -316,10 +360,11 @@ track2VolumeSlider = Slider((1100,95), (50,20), 0.5, 0, 1)
 track3VolumeSlider = Slider((1100,155), (50,20), 0.5, 0, 1)
 
 #create dropdout menu object
-menu_items = ["Change", "Mute"]
-dropdownMenu1 = DropDownMenu(menu_items, 12, 12, 100, 50, closedHighHat, "Sound 1")
-dropdownMenu2 = DropDownMenu(menu_items, 12, 72, 100, 50, snareDrum, "Sound 2")
-dropdownMenu3 = DropDownMenu(menu_items, 12, 132, 100, 50, bassDrum, "Sound 3")
+menu_items = ["Change", "Reset", "Mute"]
+dropdownMenu1 = DropDownMenu(menu_items, 12, 12, 100, 50, closedHighHat, "Sound 1", closedHighHatText, closedHighHat)
+dropdownMenu2 = DropDownMenu(menu_items, 12, 72, 100, 50, snareDrum, "Sound 2", snareDrumText, snareDrum)
+dropdownMenu3 = DropDownMenu(menu_items, 12, 132, 100, 50, bassDrum, "Sound 3", bassDrumText, bassDrum)
+
 
 #game loop
 gameLoop = True
@@ -336,6 +381,8 @@ while gameLoop:
         pygame.quit()
         sys.exit()
 
+      # Handle file dialog events
+      pygame.event.pump()
       #checking for play sound button / drop down menu events
       dropdownMenu3.handle_event(event)
       dropdownMenu2.handle_event(event)
@@ -573,4 +620,3 @@ while gameLoop:
 
     
     pygame.display.update()
-  
