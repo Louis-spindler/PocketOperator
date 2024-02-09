@@ -33,7 +33,7 @@ playThreadFlag = False
 #bool values for select all button and play button
 selectAllButton = False
 playButton = False
-
+saveMusicButton = False
 #loading images for buttons
 eraserImg = pygame.image.load('buttonTextures/eraser-icon-4.png')
 eraserImg = pygame.transform.scale(eraserImg, (40,40))
@@ -43,7 +43,8 @@ playImg = pygame.image.load('buttonTextures/play-button.png')
 playImg = pygame.transform.scale(playImg, (45,45))
 pauseImg = pygame.image.load('buttonTextures/video-pause-button.png')
 pauseImg = pygame.transform.scale(pauseImg, (45,45))
-
+saveMusicImg = pygame.image.load('buttonTextures/save-music.png')
+saveMusicImg = pygame.transform.scale(saveMusicImg, (45,45))
 #making pygame window
 width = 1150
 height = 400 
@@ -319,14 +320,20 @@ def playTracks():
                         bassDrum.play()
             check_for_track_sounds()
 
+#create a way to save beats to use for further use
+def drawSaveMusicButton():
+  drawBoolButton(saveMusicButton, 1088, 340, 50, 50, darkGrey,lightGrey,darkGrey,0,0,roundness=8)
+  window.blit(saveMusicImg, (1090,340))
 
 #Load Sounds
 snareDrum = pygame.mixer.Sound("drumSamples/newSnare.wav")
 closedHighHat = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3")
 bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
 
+
 #create slider object names tempoSlider that controls tempo.
 tempoSlider = Slider((185,370), (100,20), 0.5, 0, 100)
+
 #create slider objects for track volume sliders
 track1VolumeSlider = Slider((1100,35), (50,20), 0.5, 0, 1)
 track2VolumeSlider = Slider((1100,95), (50,20), 0.5, 0, 1)
@@ -337,6 +344,7 @@ menu_items = ["Change", "Mute"]
 dropdownMenu1 = DropDownMenu(menu_items, 12, 12, 100, 50, closedHighHat, "Sound 1")
 dropdownMenu2 = DropDownMenu(menu_items, 12, 72, 100, 50, snareDrum, "Sound 2")
 dropdownMenu3 = DropDownMenu(menu_items, 12, 132, 100, 50, bassDrum, "Sound 3")
+
 #game loop
 gameLoop = True
 while gameLoop:
@@ -346,7 +354,7 @@ while gameLoop:
     #window color
     window.fill(royalPurple) 
   
-    #loop checking for events(mouse clicks, key presses)
+    #loop checking for events(mouse clicks,key presses)
     for event in pygame.event.get():
       if event.type == QUIT:
         pygame.quit()
@@ -494,10 +502,14 @@ while gameLoop:
                 if num == trackXValues[15]:
                   c16 = not c16
                 bassDrum.play()
-                
+            
+            if 1088 <= mouse[0] <= 1088+50 and 340 <= mouse[1] <= 340+50:
+               print('Louis is chill like dat')
+
         else:
             print("playing music! Can not edit tracks while playing ):")
             
+        
     #stores the (x,y) tuple coordinates of mouse. mouseClick returns bool when mouse dose [0] left click or [2] right click
     mouse = pygame.mouse.get_pos() 
     mouseClick = pygame.mouse.get_pressed()
@@ -549,6 +561,7 @@ while gameLoop:
     
     #Draw clear all button/select all button
     drawSelectAllButton()
+
     #Draws play button
     def drawPlayButton():
       drawBoolButton(playButton,72,340,50,50,darkGrey,lightGrey,darkGrey,0,0)
@@ -557,27 +570,19 @@ while gameLoop:
       elif playButton is False:
         window.blit(playImg, (74, 342))
     drawPlayButton()
+    
+    #Draws Save Music Button
+    drawSaveMusicButton()
 
     #draw slider and check for tempo slider draging
     tempoSlider.render(window)
-    window.blit(makeText(text="Tempo", color=lightGrey, size=21), (162,342))#superimposing tempo slider text
     if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
-
-    #draw volume sliders for tracks
-    for trackSlider in [track1VolumeSlider,track2VolumeSlider,track3VolumeSlider]:   
-      trackSlider.render(window)
-      if trackSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
-        trackSlider.moveSlider(mouse)
-      TKVolume = trackSlider.getValue() 
-      if trackSlider == track1VolumeSlider:
-          closedHighHat.set_volume(TKVolume)
-      if trackSlider == track2VolumeSlider:
-          snareDrum.set_volume(TKVolume)
-      if trackSlider == track3VolumeSlider:
-          bassDrum.set_volume(TKVolume)
     
+    
+    
+
     
     pygame.display.update()
   
