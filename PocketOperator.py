@@ -23,6 +23,9 @@ tempo = 0.15
 LEFTCLICK = 1
 RIGHTCLICK = 3
 
+#bool values for drop down menues for sound playing buttons
+deployDropDown1=False
+
 # Define a flag to control the play loop
 playThread = None
 playThreadFlag = False
@@ -51,6 +54,7 @@ clock = pygame.time.Clock()
 #colors 
 white = (255,255,255) 
 navyBlue = (0,0,60) #(255,165,0)
+blue=(50,50,80)
 royalPurple = (60,25,60)
 lightGrey = (130,130,130) 
 brightGrey = (180,180,180)
@@ -87,11 +91,87 @@ class Slider:
     return value*-1
 
 
+    def __init__(self, pos: tuple, size: tuple, buttons=["button 1", "button 2", "button 3"]):
+        self.pos = pos
+        self.size = size
+        self.buttons = buttons
+        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+        self.opened = False  # Add an 'opened' attribute
+
+    def draw(self):
+        pygame.draw.rect(window, darkerGrey, self.rect, border_radius=5)
+        yVal = self.pos[1]
+        if self.opened:
+            for button in self.buttons:
+                yVal += self.pos[1] + self.size[1] / len(self.buttons) 
+                drawButton(makeText(button), self.pos[0], yVal, self.size[0], self.size[1]-12423, darkerGrey, lightGrey, 0, 0)
+        else:
+          print("sdafjglsdk")
+
+    def toggleOpened(self):
+        self.opened = not self.opened
+
+    def checkForClick(self):
+        if self.pos[0] <= mouse[0] <= self.pos[0]+self.size[0] and self.pos[1] <= mouse[1] <= self.pos[1]+self.size[1]:
+            self.toggleOpened()
+
+class DropDownMenu:
+    def __init__(self, items, x, y, width, height, sound, buttonText):
+        self.items = items
+        self.rect = pygame.Rect(x, y, width, height)
+        self.is_open = False
+        self.selected_item = None
+        self.sound = sound
+        self.buttonText = buttonText
+        self.buttonColor = darkGrey
+        self.bottomRadius=5
+        self.hoverColor=midGrey
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.buttonColor, self.rect, border_top_left_radius=5, border_top_right_radius=5, border_bottom_left_radius=self.bottomRadius, border_bottom_right_radius=self.bottomRadius)
+        window.blit(makeText(self.buttonText, navyBlue), (self.rect.x + 10, self.rect.y + 5))
+        if self.is_open:
+            self.buttonColor=lightGrey
+            self.bottomRadius=0
+            for index, item in enumerate(self.items):
+                item_rect = pygame.Rect(self.rect.x, self.rect.y + (index + 2) * self.rect.height/2, self.rect.width, self.rect.height/2)
+                pygame.draw.rect(surface, lightGrey, item_rect)
+                window.blit(makeText(item, blue, size=23), (item_rect.x + (item_rect.width/2) - (len(item)*6), item_rect.y + item_rect.height/2-10))
+        if self.is_open is False:
+          self.buttonColor=darkGrey
+          self.bottomRadius=5
+        if self.rect.collidepoint(pygame.mouse.get_pos()):
+          self.buttonColor = self.hoverColor
+    def handle_event(self, event):
+      if event.type == pygame.MOUSEBUTTONDOWN:
+          if event.button == RIGHTCLICK:  # Right-click to open dropdown
+              if self.rect.collidepoint(event.pos):
+                  self.is_open = not self.is_open
+          elif event.button == LEFTCLICK and self.is_open:  # Left-click for selecting options
+              if self.is_open:
+                  for index, item in enumerate(self.items):
+                      item_rect = pygame.Rect(self.rect.x, self.rect.y + (index + 2) * self.rect.height/2, self.rect.width, self.rect.height/2)
+                      if item_rect.collidepoint(event.pos):
+                          self.selected_item = item
+                          self.is_open = False
+                          print("sfdblnkdkbjdf")
+                          if item == "Mute":
+                              self.sound.set_volume(0.1)
+                              print("muting...")
+                          elif item == "Change":
+                              print("changing sound "+str(index))
+                  if self.rect.collidepoint(event.pos):
+                    self.sound.play()
+                    self.is_open=not self.is_open
+          elif event.button == LEFTCLICK and not self.is_open:  # Left-click to play sound
+              if self.rect.collidepoint(event.pos):
+                  self.sound.play()
+                        
+
 #function that creates text
-def makeText(text="text", color=(255,255,255), font='Corbel', size=28):
-  smallFont = pygame.font.SysFont(font, size) 
-  finalText = smallFont.render(text, True, color)
-  return finalText
+def makeText(text="text", color=(255, 255, 255), font='Corbel', size=28):
+    smallFont = pygame.font.SysFont(font, size)
+    finalText = smallFont.render(text, True, color)
+    return finalText
   
 #function that draws button(s)
 def drawButton(text,xCoor,yCoor,width,height,bgColor,bgHoverColor,textXcoorAdd,textYcoorAdd,roundness=8):
@@ -245,13 +325,18 @@ snareDrum = pygame.mixer.Sound("drumSamples/newSnare.wav")
 closedHighHat = pygame.mixer.Sound("drumSamples/newClosedHiHat.mp3")
 bassDrum = pygame.mixer.Sound("drumSamples/newBassDrum.mp3")
 
-#create slider object names tempoSlider thant controls tempo.
+#create slider object names tempoSlider that controls tempo.
 tempoSlider = Slider((185,370), (100,20), 0.5, 0, 100)
 #create slider objects for track volume sliders
 track1VolumeSlider = Slider((1100,35), (50,20), 0.5, 0, 1)
 track2VolumeSlider = Slider((1100,95), (50,20), 0.5, 0, 1)
 track3VolumeSlider = Slider((1100,155), (50,20), 0.5, 0, 1)
 
+#create dropdout menu object
+menu_items = ["Change", "Mute"]
+dropdownMenu1 = DropDownMenu(menu_items, 12, 12, 100, 50, closedHighHat, "Sound 1")
+dropdownMenu2 = DropDownMenu(menu_items, 12, 72, 100, 50, snareDrum, "Sound 2")
+dropdownMenu3 = DropDownMenu(menu_items, 12, 132, 100, 50, bassDrum, "Sound 3")
 #game loop
 gameLoop = True
 while gameLoop:
@@ -266,23 +351,14 @@ while gameLoop:
       if event.type == QUIT:
         pygame.quit()
         sys.exit()
-      if event.type == pygame.MOUSEBUTTONDOWN: 
-        #check for Sound 1, 2, and 3 button press
-        if 12 <= mouse[0] <= 12+100 and 12 <= mouse[1] <= 12+40:
-          if event.button==LEFTCLICK: 
-            print("playing sound 1")
-            closedHighHat.play()
-          if event.button==RIGHTCLICK:
-            pass#!!!!!ADD change sample option to the play sound buttons!!!!!!
-        elif 12 <= mouse[0] <= 12+100 and 72 <= mouse[1] <= 72+50:
-          if event.button==LEFTCLICK:
-            print("playing sound 2")
-            snareDrum.play()
-        elif 12 <= mouse[0] <= 12+100 and 132 <= mouse[1] <= 132+50:
-          if event.button==LEFTCLICK:
-            print("playing sound 3")
-            bassDrum.play()
 
+      #checking for play sound button / drop down menu events
+      dropdownMenu3.handle_event(event)
+      dropdownMenu2.handle_event(event)
+      dropdownMenu1.handle_event(event)
+      
+      if event.type == pygame.MOUSEBUTTONDOWN: 
+        
         #check for play button presses!!!!!!! Threading makes play back not incredably glitchy/anoying
         if 72 <= mouse[0] <= 72+50 and 340 <= mouse[1] <= 340+50:
             playButton = not playButton
@@ -466,13 +542,11 @@ while gameLoop:
         x += 59
     drawThirdTrackRow()
   
-    #Draw sound 1 button
-    drawButton(makeText(text="Sound 1", color=navyBlue),12,12,100,50,darkGrey,lightGrey, 18, 22.5)
-    #Draw sound 2 button
-    drawButton(makeText(text="Sound 2", color=navyBlue),12,72,100,50,darkGrey,lightGrey, 18, 52.5)
-    #Draw sound 3 button
-    drawButton(makeText(text="Sound 3", color=navyBlue),12,132,100,50,darkGrey,lightGrey, 18, 80)
-  
+    #draw play sound drop down menus
+    dropdownMenu3.draw(window)
+    dropdownMenu2.draw(window)
+    dropdownMenu1.draw(window)
+    
     #Draw clear all button/select all button
     drawSelectAllButton()
     #Draws play button
