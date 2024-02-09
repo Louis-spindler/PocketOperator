@@ -92,30 +92,6 @@ class Slider:
     return value*-1
 
 
-    def __init__(self, pos: tuple, size: tuple, buttons=["button 1", "button 2", "button 3"]):
-        self.pos = pos
-        self.size = size
-        self.buttons = buttons
-        self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
-        self.opened = False  # Add an 'opened' attribute
-
-    def draw(self):
-        pygame.draw.rect(window, darkerGrey, self.rect, border_radius=5)
-        yVal = self.pos[1]
-        if self.opened:
-            for button in self.buttons:
-                yVal += self.pos[1] + self.size[1] / len(self.buttons) 
-                drawButton(makeText(button), self.pos[0], yVal, self.size[0], self.size[1]-12423, darkerGrey, lightGrey, 0, 0)
-        else:
-          print("sdafjglsdk")
-
-    def toggleOpened(self):
-        self.opened = not self.opened
-
-    def checkForClick(self):
-        if self.pos[0] <= mouse[0] <= self.pos[0]+self.size[0] and self.pos[1] <= mouse[1] <= self.pos[1]+self.size[1]:
-            self.toggleOpened()
-
 class DropDownMenu:
     def __init__(self, items, x, y, width, height, sound, buttonText):
         self.items = items
@@ -503,6 +479,7 @@ while gameLoop:
                   c16 = not c16
                 bassDrum.play()
             
+            #check for save music button press
             if 1088 <= mouse[0] <= 1088+50 and 340 <= mouse[1] <= 340+50:
                print('Louis is chill like dat')
 
@@ -576,11 +553,22 @@ while gameLoop:
 
     #draw slider and check for tempo slider draging
     tempoSlider.render(window)
+    window.blit(makeText(text="Tempo", color=lightGrey, size=21), (162,342))#superimposing tempo slider text
     if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
     
-    
+    for trackSlider in [track1VolumeSlider,track2VolumeSlider,track3VolumeSlider]:   
+      trackSlider.render(window)
+      if trackSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
+        trackSlider.moveSlider(mouse)
+      TKVolume = trackSlider.getValue() 
+      if trackSlider == track1VolumeSlider:
+          closedHighHat.set_volume(TKVolume)
+      if trackSlider == track2VolumeSlider:
+          snareDrum.set_volume(TKVolume)
+      if trackSlider == track3VolumeSlider:
+          bassDrum.set_volume(TKVolume)
     
 
     
