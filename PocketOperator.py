@@ -19,6 +19,13 @@ a1=a2=a3=a4=a5=a6=a7=a8=a9=a10=a11=a12=a13=a14=a15=a16=b1=b2=b3=b4=b5=b6=b7=b8=b
 numOfNotesPerTrack = 16 #please change if var above are!!!!!
 trackXValues = [120,180,239,239+(59*1),239+(59*2),239+(59*3),239+(59*4),239+(59*5),239+(59*6),239+(59*7),239+(59*8),239+(59*9),239+(59*10),239+(59*11),239+(59*12),239+(59*13),239+(59*14),239+(59*15)]
 
+#list of values for the darkgrey bar markers
+barLstFourFour = [1,5,9,13,19]
+barLstThreeFour = [1,4,7,10,13]
+barLst = []
+threeFour = False
+fourFour = True
+
 #float value for tempo
 tempo = 0.15
 
@@ -37,6 +44,7 @@ playThreadFlag = False
 selectAllButton = False
 playButton = False
 saveMusicButton = False
+
 #loading images for buttons
 eraserImg = pygame.image.load('buttonTextures/eraser-icon-4.png')
 eraserImg = pygame.transform.scale(eraserImg, (40,40))
@@ -188,6 +196,16 @@ class DropDownMenu:
 
         return file_path
     
+# class KeySigSelector:
+#   def __init__(self,pos: tuple,size: tuple,buttons=["3/4","4/4"]):
+#     self.pos = pos
+#     self.size = size
+#     self.buttons = buttons
+#     self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
+#   def draw(self):
+#     for button in range(len(self.buttons)):
+#       pygame.draw.rect()
+     
 
 #function that creates text
 def makeText(text="text", color=(255, 255, 255), font='Corbel', size=28):
@@ -212,6 +230,7 @@ def drawBoolButton(BoolVar,xCoor,yCoor,width,height,unselectedColor,hoverColor,s
   elif BoolVar is False:
     drawButton(makeText(text=text),xCoor,yCoor,width,height,unselectedColor,hoverColor,textXcoorAdd,textYcoorAdd)
 
+
 #function that draws select all button
 def drawSelectAllButton():
     drawBoolButton(selectAllButton,12,340,50,50,darkGrey,lightGrey,darkGrey,0,0)
@@ -223,6 +242,10 @@ def drawSelectAllButton():
 #function used when run button is pressed
 def playTracks():
     global playThreadFlag
+    if fourFour:
+      numOfNotesPerTrack = 16
+    if threeFour:
+       numOfNotesPerTrack = 15
     while playThreadFlag:
         for note in range(numOfNotesPerTrack):
             time.sleep(tempo)
@@ -332,13 +355,15 @@ def playTracks():
                         snareDrum.play()
                     if c15 is True:
                         bassDrum.play()
-                if note == 15:
+                if fourFour:
+                  if note == 15:
                     if a16 is True:
                         closedHighHat.play()
                     if b16 is True:
                         snareDrum.play()
                     if c16 is True:
                         bassDrum.play()
+                
             check_for_track_sounds()
 
 #create a way to save beats to use for further use
@@ -447,8 +472,10 @@ while gameLoop:
                     a14 = not a14
                   if num == trackXValues[14]:
                     a15 = not a15
-                  if num == trackXValues[15]:
-                    a16 = not a16
+                  #checking if time signature is four four time
+                  if fourFour:
+                    if num == trackXValues[15]:
+                      a16 = not a16
                   #play corisponding sound for funzies enever button is pressed
                   closedHighHat.play()
             #for loop checking for second track presses
@@ -485,8 +512,9 @@ while gameLoop:
                   b14 = not b14
                 if num == trackXValues[14]:
                   b15 = not b15
-                if num == trackXValues[15]:
-                  b16 = not b16
+                if fourFour:
+                  if num == trackXValues[15]:
+                    b16 = not b16
                 snareDrum.play()
             #for loop checking for third track presses
             for num in trackXValues:
@@ -522,10 +550,10 @@ while gameLoop:
                   c14 = not c14
                 if num == trackXValues[14]:
                   c15 = not c15
-                if num == trackXValues[15]:
-                  c16 = not c16
-                bassDrum.play()
-            
+                if fourFour:
+                  if num == trackXValues[15]:
+                    c16 = not c16
+                bassDrum.play()        
             #check for save music button press
             if 1088 <= mouse[0] <= 1088+50 and 340 <= mouse[1] <= 340+50:
                print('Louis is chill like dat')
@@ -538,6 +566,11 @@ while gameLoop:
     mouse = pygame.mouse.get_pos() 
     mouseClick = pygame.mouse.get_pressed()
 
+    #changing down beat markers for corrisponding time signature
+    if fourFour:
+      barLst = barLstFourFour
+    if threeFour:
+      barLst = barLstThreeFour
     def drawFirstTrackRow():
       vars = [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16]
       x = 121
@@ -545,7 +578,7 @@ while gameLoop:
       num = 0
       for var in vars:
         num+=1
-        if num in [1,5,9,13,19]:
+        if num in barLst:
           drawBoolButton(var,x,y,50,50,darkerGrey,darkGrey,brightGrey,0,0)
         else:
           drawBoolButton(var,x,y,50,50,darkGrey,lightGrey,brightGrey,0,0)
@@ -558,7 +591,7 @@ while gameLoop:
       num = 0
       for var in vars:
         num+=1
-        if num in [1,5,9,13,19]:
+        if num in barLst:
           drawBoolButton(var,x,y,50,50,darkerGrey,darkGrey,brightGrey,0,0)
         else:
           drawBoolButton(var,x,y,50,50,darkGrey,lightGrey,brightGrey,0,0)
@@ -571,7 +604,7 @@ while gameLoop:
       num = 0
       for var in vars:
         num+=1
-        if num in [1,5,9,13,19]:
+        if num in barLst:
           drawBoolButton(var,x,y,50,50,darkerGrey,darkGrey,brightGrey,0,0)
         else:
           drawBoolButton(var,x,y,50,50,darkGrey,lightGrey,brightGrey,0,0)
@@ -582,7 +615,7 @@ while gameLoop:
     dropdownMenu3.draw(window)
     dropdownMenu2.draw(window)
     dropdownMenu1.draw(window)
-    
+
     #Draw clear all button/select all button
     drawSelectAllButton()
 
@@ -616,7 +649,6 @@ while gameLoop:
           snareDrum.set_volume(TKVolume)
       if trackSlider == track3VolumeSlider:
           bassDrum.set_volume(TKVolume)
-    
 
     
     pygame.display.update()
