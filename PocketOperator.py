@@ -6,23 +6,28 @@ import pygame
 from pygame import mixer
 from pygame.locals import QUIT
 import time
+import csv
 #threading so game dosen't die when trackes are played
 import threading
+
+csv_file = 'musicExport.csv'
 
 #initializing pygame package and mixer
 pygame.init()
 pygame.mixer.init()
 
-#variables for track button
+#variables for track buttons
 number = 120
 a1=a2=a3=a4=a5=a6=a7=a8=a9=a10=a11=a12=a13=a14=a15=a16=b1=b2=b3=b4=b5=b6=b7=b8=b9=b10=b11=b12=b13=b14=b15=b16=c1=c2=c3=c4=c5=c6=c7=c8=c9=c10=c11=c12=c13=c14=c15=c16=False
 numOfNotesPerTrack = 16 #please change if var above are!!!!!
 trackXValues = [120,180,239,239+(59*1),239+(59*2),239+(59*3),239+(59*4),239+(59*5),239+(59*6),239+(59*7),239+(59*8),239+(59*9),239+(59*10),239+(59*11),239+(59*12),239+(59*13),239+(59*14),239+(59*15)]
 
-#list of values for the darkgrey bar markers
+#list of values for the darkgrey down beat/bar markers
 barLstFourFour = [1,5,9,13,19]
 barLstThreeFour = [1,4,7,10,13]
+#if key sig is threefour, barLst is set to barLstThreeFour
 barLst = []
+#bool vals for key signitures
 threeFour = False
 fourFour = True
 
@@ -408,6 +413,7 @@ while gameLoop:
 
       # Handle file dialog events
       pygame.event.pump()
+
       #checking for play sound button / drop down menu events
       dropdownMenu3.handle_event(event)
       dropdownMenu2.handle_event(event)
@@ -425,141 +431,142 @@ while gameLoop:
             else:
                 playThread.join()  
 
-        #if statment so the user can't edit tracks while playing them
-        if playButton is False:
+        # #if statment so the user can't edit tracks while playing them
+        # if playButton is False:
+        #*2 indent
+        #check for clear all / select all button presses
+        if 12 <= mouse[0] <= 12+50 and 340 <= mouse[1] <= 340+50:
+          selectAllButton = not selectAllButton
+          if selectAllButton is True:
+            a1=a2=a3=a4=a5=a6=a7=a8=a9=a10=a11=a12=a13=a14=a15=a16=b1=b2=b3=b4=b5=b6=b7=b8=b9=b10=b11=b12=b13=b14=b15=b16=c1=c2=c3=c4=c5=c6=c7=c8=c9=c10=c11=c12=c13=c14=c15=c16=True
 
-            #check for clear all / select all button presses
-            if 12 <= mouse[0] <= 12+50 and 340 <= mouse[1] <= 340+50:
-              selectAllButton = not selectAllButton
-              if selectAllButton is True:
-                a1=a2=a3=a4=a5=a6=a7=a8=a9=a10=a11=a12=a13=a14=a15=a16=b1=b2=b3=b4=b5=b6=b7=b8=b9=b10=b11=b12=b13=b14=b15=b16=c1=c2=c3=c4=c5=c6=c7=c8=c9=c10=c11=c12=c13=c14=c15=c16=True
+          else:
+            a1=a2=a3=a4=a5=a6=a7=a8=a9=a10=a11=a12=a13=a14=a15=a16=b1=b2=b3=b4=b5=b6=b7=b8=b9=b10=b11=b12=b13=b14=b15=b16=c1=c2=c3=c4=c5=c6=c7=c8=c9=c10=c11=c12=c13=c14=c15=c16=False
 
-              else:
-                a1=a2=a3=a4=a5=a6=a7=a8=a9=a10=a11=a12=a13=a14=a15=a16=b1=b2=b3=b4=b5=b6=b7=b8=b9=b10=b11=b12=b13=b14=b15=b16=c1=c2=c3=c4=c5=c6=c7=c8=c9=c10=c11=c12=c13=c14=c15=c16=False
+        
+        #for loop checking for first track presses
+        for num in trackXValues:
+            if num <= mouse[0] <= num+50 and 12 <= mouse[1] <= 12+50:
+              print(f"a{num} button pressed")
+              if num == trackXValues[0]:
+                a1 = not a1
+              if num == trackXValues[1]:
+                a2 = not a2
+              if num == trackXValues[2]:
+                a3 = not a3
+              if num == trackXValues[3]:
+                a4 = not a4
+              if num == trackXValues[4]:
+                a5 = not a5
+              if num == trackXValues[5]:
+                a6 = not a6
+              if num == trackXValues[6]:
+                a7 = not a7
+              if num == trackXValues[7]:
+                a8 = not a8
+              if num == trackXValues[8]:
+                a9 = not a9
+              if num == trackXValues[9]:
+                a10 = not a10
+              if num == trackXValues[10]:
+                a11 = not a11
+              if num == trackXValues[11]:
+                a12 = not a12
+              if num == trackXValues[12]:
+                a13 = not a13
+              if num == trackXValues[13]:
+                a14 = not a14
+              if num == trackXValues[14]:
+                a15 = not a15
+              #checking if time signature is four four time
+              if fourFour:
+                if num == trackXValues[15]:
+                  a16 = not a16
+              #play corisponding sound for funzies enever button is pressed
+              closedHighHat.play()
+        #for loop checking for second track presses
+        for num in trackXValues:
+          if num <= mouse[0] <= num+50 and 72 <= mouse[1] <= 72+50:
+            print(f"b{num} button pressed")
+            if num == trackXValues[0]:
+              b1 = not b1
+            if num == trackXValues[1]:
+              b2 = not b2
+            if num == trackXValues[2]:
+              b3 = not b3
+            if num == trackXValues[3]:
+              b4 = not b4
+            if num == trackXValues[4]:
+              b5 = not b5
+            if num == trackXValues[5]:
+              b6 = not b6
+            if num == trackXValues[6]:
+              b7 = not b7
+            if num == trackXValues[7]:
+              b8 = not b8
+            if num == trackXValues[8]:
+              b9 = not b9
+            if num == trackXValues[9]:
+              b10 = not b10
+            if num == trackXValues[10]:
+              b11 = not b11
+            if num == trackXValues[11]:
+              b12 = not b12
+            if num == trackXValues[12]:
+              b13 = not b13
+            if num == trackXValues[13]:
+              b14 = not b14
+            if num == trackXValues[14]:
+              b15 = not b15
+            if fourFour:
+              if num == trackXValues[15]:
+                b16 = not b16
+            snareDrum.play()
+        #for loop checking for third track presses
+        for num in trackXValues:
+          if num <= mouse[0] <= num+50 and 132 <= mouse[1] <= 132+50:
+            print(f"c{num} button pressed")
+            if num == trackXValues[0]:
+              c1 = not c1
+            if num == trackXValues[1]:
+              c2 = not c2
+            if num == trackXValues[2]:
+              c3 = not c3
+            if num == trackXValues[3]:
+              c4 = not c4
+            if num == trackXValues[4]:
+              c5 = not c5
+            if num == trackXValues[5]:
+              c6 = not c6
+            if num == trackXValues[6]:
+              c7 = not c7
+            if num == trackXValues[7]:
+              c8 = not c8
+            if num == trackXValues[8]:
+              c9 = not c9
+            if num == trackXValues[9]:
+              c10 = not c10
+            if num == trackXValues[10]:
+              c11 = not c11
+            if num == trackXValues[11]:
+              c12 = not c12
+            if num == trackXValues[12]:
+              c13 = not c13
+            if num == trackXValues[13]:
+              c14 = not c14
+            if num == trackXValues[14]:
+              c15 = not c15
+            if fourFour:
+              if num == trackXValues[15]:
+                c16 = not c16
+            bassDrum.play()        
+        #check for save music button press
+        if 1088 <= mouse[0] <= 1088+50 and 340 <= mouse[1] <= 340+50:
+            print('Louis is chill like dat')
+            saveMusicButton = not saveMusicButton
 
-            
-            #for loop checking for first track presses
-            for num in trackXValues:
-                if num <= mouse[0] <= num+50 and 12 <= mouse[1] <= 12+50:
-                  print(f"a{num} button pressed")
-                  if num == trackXValues[0]:
-                    a1 = not a1
-                  if num == trackXValues[1]:
-                    a2 = not a2
-                  if num == trackXValues[2]:
-                    a3 = not a3
-                  if num == trackXValues[3]:
-                    a4 = not a4
-                  if num == trackXValues[4]:
-                    a5 = not a5
-                  if num == trackXValues[5]:
-                    a6 = not a6
-                  if num == trackXValues[6]:
-                    a7 = not a7
-                  if num == trackXValues[7]:
-                    a8 = not a8
-                  if num == trackXValues[8]:
-                    a9 = not a9
-                  if num == trackXValues[9]:
-                    a10 = not a10
-                  if num == trackXValues[10]:
-                    a11 = not a11
-                  if num == trackXValues[11]:
-                    a12 = not a12
-                  if num == trackXValues[12]:
-                    a13 = not a13
-                  if num == trackXValues[13]:
-                    a14 = not a14
-                  if num == trackXValues[14]:
-                    a15 = not a15
-                  #checking if time signature is four four time
-                  if fourFour:
-                    if num == trackXValues[15]:
-                      a16 = not a16
-                  #play corisponding sound for funzies enever button is pressed
-                  closedHighHat.play()
-            #for loop checking for second track presses
-            for num in trackXValues:
-              if num <= mouse[0] <= num+50 and 72 <= mouse[1] <= 72+50:
-                print(f"b{num} button pressed")
-                if num == trackXValues[0]:
-                  b1 = not b1
-                if num == trackXValues[1]:
-                  b2 = not b2
-                if num == trackXValues[2]:
-                  b3 = not b3
-                if num == trackXValues[3]:
-                  b4 = not b4
-                if num == trackXValues[4]:
-                  b5 = not b5
-                if num == trackXValues[5]:
-                  b6 = not b6
-                if num == trackXValues[6]:
-                  b7 = not b7
-                if num == trackXValues[7]:
-                  b8 = not b8
-                if num == trackXValues[8]:
-                  b9 = not b9
-                if num == trackXValues[9]:
-                  b10 = not b10
-                if num == trackXValues[10]:
-                  b11 = not b11
-                if num == trackXValues[11]:
-                  b12 = not b12
-                if num == trackXValues[12]:
-                  b13 = not b13
-                if num == trackXValues[13]:
-                  b14 = not b14
-                if num == trackXValues[14]:
-                  b15 = not b15
-                if fourFour:
-                  if num == trackXValues[15]:
-                    b16 = not b16
-                snareDrum.play()
-            #for loop checking for third track presses
-            for num in trackXValues:
-              if num <= mouse[0] <= num+50 and 132 <= mouse[1] <= 132+50:
-                print(f"c{num} button pressed")
-                if num == trackXValues[0]:
-                  c1 = not c1
-                if num == trackXValues[1]:
-                  c2 = not c2
-                if num == trackXValues[2]:
-                  c3 = not c3
-                if num == trackXValues[3]:
-                  c4 = not c4
-                if num == trackXValues[4]:
-                  c5 = not c5
-                if num == trackXValues[5]:
-                  c6 = not c6
-                if num == trackXValues[6]:
-                  c7 = not c7
-                if num == trackXValues[7]:
-                  c8 = not c8
-                if num == trackXValues[8]:
-                  c9 = not c9
-                if num == trackXValues[9]:
-                  c10 = not c10
-                if num == trackXValues[10]:
-                  c11 = not c11
-                if num == trackXValues[11]:
-                  c12 = not c12
-                if num == trackXValues[12]:
-                  c13 = not c13
-                if num == trackXValues[13]:
-                  c14 = not c14
-                if num == trackXValues[14]:
-                  c15 = not c15
-                if fourFour:
-                  if num == trackXValues[15]:
-                    c16 = not c16
-                bassDrum.play()        
-            #check for save music button press
-            if 1088 <= mouse[0] <= 1088+50 and 340 <= mouse[1] <= 340+50:
-               print('Louis is chill like dat')
-
-        else:
-            print("playing music! Can not edit tracks while playing ):")
+        # else:
+        #     print("playing music! Can not edit tracks while playing ):")
             
         
     #stores the (x,y) tuple coordinates of mouse. mouseClick returns bool when mouse dose [0] left click or [2] right click
@@ -630,6 +637,15 @@ while gameLoop:
     
     #Draws Save Music Button
     drawSaveMusicButton()
+    if saveMusicButton is True:
+      print("i am so kule")
+      musicButtonValues = [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16] 
+      with open(csv_file, 'w', newline='') as file:
+        writer = csv.writer(file)
+        # Write header
+        writer.writerow(['music '])
+        # Write data
+        writer.writerow(musicButtonValues)
 
     #draw slider and check for tempo slider draging
     tempoSlider.render(window)
@@ -638,6 +654,7 @@ while gameLoop:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
     
+    #drawing volume sliders for indivituial tracks
     for trackSlider in [track1VolumeSlider,track2VolumeSlider,track3VolumeSlider]:   
       trackSlider.render(window)
       if trackSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
