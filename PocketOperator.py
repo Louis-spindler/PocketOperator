@@ -28,8 +28,8 @@ barLstThreeFour = [1,4,7,10,13]
 #if key sig is threefour, barLst is set to barLstThreeFour
 barLst = []
 #bool vals for key signitures
-threeFour = False
-fourFour = True
+threeFour = True
+fourFour = False
 
 #float value for tempo
 tempo = 0.15
@@ -49,6 +49,7 @@ playThreadFlag = False
 selectAllButton = False
 playButton = False
 saveMusicButton = False
+importMusicButton = False
 
 #loading images for buttons
 eraserImg = pygame.image.load('buttonTextures/eraser-icon-4.png')
@@ -61,6 +62,8 @@ pauseImg = pygame.image.load('buttonTextures/video-pause-button.png')
 pauseImg = pygame.transform.scale(pauseImg, (45,45))
 saveMusicImg = pygame.image.load('buttonTextures/save-music.png')
 saveMusicImg = pygame.transform.scale(saveMusicImg, (45,45))
+importMusicImg = pygame.image.load('buttonTextures/importMusic.png')
+importMusicImg = pygame.transform.scale(importMusicImg, (45,45))
 
 
 #making pygame window
@@ -371,10 +374,13 @@ def playTracks():
                 
             check_for_track_sounds()
 
-#create a way to save beats to use for further use
+#create a way to save beats to use for further use****************************************************
 def drawSaveMusicButton():
   drawBoolButton(saveMusicButton, 1088, 340, 50, 50, darkGrey,lightGrey,darkGrey,0,0,roundness=8)
   window.blit(saveMusicImg, (1090,340))
+def drawImportMusicButton():
+  drawBoolButton(importMusicButton, 1030, 340, 50, 50, darkGrey,lightGrey,darkGrey,0,0,roundness=8)
+  window.blit(importMusicImg, (1032,340))
 
 #Load Sounds
 snareDrum, snareDrumText = pygame.mixer.Sound("drumSamples/newSnare.wav"), "Snare Drum"
@@ -640,12 +646,20 @@ while gameLoop:
     if saveMusicButton is True:
       print("i am so kule")
       musicButtonValues = [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16,b1,b2,b3,b4,b5,b6,b7,b8,b9,b10,b11,b12,b13,b14,b15,b16,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16] 
-      with open(csv_file, 'w', newline='') as file:
+      with open(csv_file, 'a', newline='') as file:
         writer = csv.writer(file)
         # Write header
-        writer.writerow(['music '])
+        writer.writerow('music')
         # Write data
         writer.writerow(musicButtonValues)
+      saveMusicButton = False
+    drawImportMusicButton()
+    if importMusicButton is True:
+      print("exporting ur face")
+
+      
+      
+    
 
     #draw slider and check for tempo slider draging
     tempoSlider.render(window)
