@@ -25,11 +25,11 @@ trackXValues = [120,180,239,239+(59*1),239+(59*2),239+(59*3),239+(59*4),239+(59*
 #list of values for the darkgrey down beat/bar markers
 barLstFourFour = [1,5,9,13,19]
 barLstThreeFour = [1,4,7,10,13]
-#if key sig is threefour, barLst is set to barLstThreeFour
+#if time sig is threefour, barLst is set to barLstThreeFour
 barLst = []
-#bool vals for key signitures
-threeFour = True
-fourFour = False
+#bool vals for time signitures
+threeFour = False
+fourFour = True
 
 #float value for tempo
 tempo = 0.15
@@ -60,10 +60,10 @@ playImg = pygame.image.load('buttonTextures/play-button.png')
 playImg = pygame.transform.scale(playImg, (45,45))
 pauseImg = pygame.image.load('buttonTextures/video-pause-button.png')
 pauseImg = pygame.transform.scale(pauseImg, (45,45))
-saveMusicImg = pygame.image.load('buttonTextures/save-music.png')
-saveMusicImg = pygame.transform.scale(saveMusicImg, (45,45))
-importMusicImg = pygame.image.load('buttonTextures/importMusic.png')
+importMusicImg = pygame.image.load('buttonTextures/save-music.png')
 importMusicImg = pygame.transform.scale(importMusicImg, (45,45))
+saveMusicImg = pygame.image.load('buttonTextures/importMusic.png')
+saveMusicImg = pygame.transform.scale(saveMusicImg, (45,45))
 
 
 #making pygame window
@@ -76,9 +76,9 @@ clock = pygame.time.Clock()
 
 #colors 
 white = (255,255,255) 
-navyBlue = (0,0,60) #(255,165,0)
+navyBlue = (50,50,50) #(255,165,0)
 blue=(50,50,80)
-royalPurple = (60,25,60)
+royalPurple = (160,160,160)#(60,25,60)
 lightGrey = (130,130,130) 
 brightGrey = (180,180,180)
 midGrey = (140,140,140)
@@ -165,6 +165,16 @@ class DropDownMenu:
                               print(f"resetting {self.soundText}")
                               self.sound = self.ogSound
                               self.soundText = ''
+                          elif item == "3/4":
+                              threeFour = True
+                              fourFour = False
+                              print("3/4 is good at fortnight: "+str(threeFour))
+                              
+                          elif item == "4/4":
+                              fourFour = True
+                              threeFour = False
+                              print("4/4 is good at fortnight: "+str(fourFour))
+
                   if self.rect.collidepoint(event.pos):
                     self.sound.play()
                     self.is_open=not self.is_open
@@ -211,9 +221,10 @@ class DropDownMenu:
 #     self.buttons = buttons
 #     self.rect = pygame.Rect(self.pos[0], self.pos[1], self.size[0], self.size[1])
 #   def draw(self):
-#     for button in range(len(self.buttons)):
-#       pygame.draw.rect()
-     
+#     for index, item in enumerate(self.buttons):
+#       item_rect = pygame.Rect(self.rect.x, self.rect.y + (index + 2) * self.rect.height/2, self.rect.width, self.rect.height/2)
+#       pygame.draw.rect(window, lightGrey, item_rect)
+#       window.blit(makeText(item, blue, size=20), (item_rect.x + 10, item_rect.y + item_rect.height/2-10))
 
 #function that creates text
 def makeText(text="text", color=(255, 255, 255), font='Corbel', size=28):
@@ -396,10 +407,13 @@ track2VolumeSlider = Slider((1100,95), (50,20), 0.5, 0, 1)
 track3VolumeSlider = Slider((1100,155), (50,20), 0.5, 0, 1)
 
 #create dropdout menu object
-menu_items = ["Change", "Reset", "Mute"]
+menu_items = ["Change", "Reset"]
 dropdownMenu1 = DropDownMenu(menu_items, 12, 12, 100, 50, closedHighHat, "Sound 1", closedHighHatText, closedHighHat)
 dropdownMenu2 = DropDownMenu(menu_items, 12, 72, 100, 50, snareDrum, "Sound 2", snareDrumText, snareDrum)
 dropdownMenu3 = DropDownMenu(menu_items, 12, 132, 100, 50, bassDrum, "Sound 3", bassDrumText, bassDrum)
+
+#using drop down menue class to create key signature selector
+keySigSelector = DropDownMenu(["4/4","3/4"],  1075, 190, 50, 40, snareDrum, "T-Sig", "", snareDrum)
 
 
 #game loop
@@ -424,6 +438,7 @@ while gameLoop:
       dropdownMenu3.handle_event(event)
       dropdownMenu2.handle_event(event)
       dropdownMenu1.handle_event(event)
+      keySigSelector.handle_event(event)
       
       if event.type == pygame.MOUSEBUTTONDOWN: 
         
@@ -582,8 +597,10 @@ while gameLoop:
     #changing down beat markers for corrisponding time signature
     if fourFour:
       barLst = barLstFourFour
+      #print("jhon")
     if threeFour:
       barLst = barLstThreeFour
+      #print("john")
     def drawFirstTrackRow():
       vars = [a1,a2,a3,a4,a5,a6,a7,a8,a9,a10,a11,a12,a13,a14,a15,a16]
       x = 121
@@ -628,6 +645,7 @@ while gameLoop:
     dropdownMenu3.draw(window)
     dropdownMenu2.draw(window)
     dropdownMenu1.draw(window)
+    keySigSelector.draw(window)
 
     #Draw clear all button/select all button
     drawSelectAllButton()
@@ -663,7 +681,7 @@ while gameLoop:
 
     #draw slider and check for tempo slider draging
     tempoSlider.render(window)
-    window.blit(makeText(text="Tempo", color=lightGrey, size=21), (162,342))#superimposing tempo slider text
+    window.blit(makeText(text="BPM", color=darkGrey, size=21), (170,342))#superimposing tempo slider text
     if tempoSlider.containerRect.collidepoint(mouse) and mouseClick[0]:
       tempoSlider.moveSlider(mouse)
     tempo = tempoSlider.getValue() * 0.005
